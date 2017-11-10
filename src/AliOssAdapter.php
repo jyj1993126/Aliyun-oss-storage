@@ -7,15 +7,15 @@
 
 namespace Jacobcyl\AliOSS;
 
+use Debugbar;
 use Dingo\Api\Contract\Transformer\Adapter;
 use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util;
+use Log;
 use OSS\Core\OssException;
 use OSS\OssClient;
-use Log;
-use Debugbar;
 
 class AliOssAdapter extends AbstractAdapter
 {
@@ -559,10 +559,12 @@ class AliOssAdapter extends AbstractAdapter
      *
      * @return string
      */
-    public function getUrl( $path )
-    {
-        return ( $this->ssl ? 'https://' : 'http://' ) . ( $this->isCname ? '' : $this->bucket ) . "{$this->endPoint}/$path";
-    }
+	public function getUrl( $path )
+	{
+		$schema = $this->ssl ? 'https' : 'http';
+		$domain = $this->isCname ? $this->endPoint : "{$this->bucket}.{$this->endPoint}";
+		return "{$schema}://{$domain}/{$path}";
+	}
 
     /**
      * The the ACL visibility.
